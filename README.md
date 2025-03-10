@@ -1,12 +1,14 @@
 # OperatingSystems
 This repository contains C programs developed for various problems related to the subject of Operating Systems. These programs were created as part of a college course on Operating Systems, covering key concepts and implementations.
 
-## 🔧 How to compile the programs?
-If you want to compile the programs, you need a C compiler. I recommend using **WSL** *(if you are using linux skip this part)* and installing the necessary tools with the following commands:
+## 🔧 How to Compile the Programs
+To compile the programs, you need a C compiler. If you're using Linux, you likely already have the necessary tools. Windows users should install WSL and set up the required packages with:
 ```bash
 sudo apt update  
 sudo apt install build-essential  
 ```
-This will install GCC and other essential compilers needed for building the programs.
+This installs GCC and other essential build tools.
 
-You can install WSL by following this guide: https://learn.microsoft.com/en-us/windows/wsl/install
+👉 Install WSL by following this guide: [WSL Installation Guide.](https://learn.microsoft.com/en-us/windows/wsl/install)
+
+This project uses Makefiles to automate the build process.
