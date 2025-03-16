@@ -1,6 +1,7 @@
 {
   "files.associations": {
     "collatz.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "dlfcn.h": "c"
   }
 }
