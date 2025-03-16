@@ -9,7 +9,6 @@ collatz-static:
 	gcc -o main.o -c main.c
 	gcc -o main.exe main.o libcollatz.a
 
-# Input the last line yourself
 collatz-shared:
 	gcc -shared -o libcollatz.so collatz.c
 	gcc -o main.exe main.c -L. libcollatz.so
