@@ -4,3 +4,4 @@
 *.exe 
 *.a
 *.so
+*.output
