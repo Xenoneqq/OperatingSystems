@@ -6,12 +6,10 @@
 //compile with -lrt
 int by_character(char* original, char* copy){
   FILE* original_file = fopen(original , "r");
-
   if(original_file == NULL){
     printf("Failed to open the file...\n");
     return -1;
   }
-
   
   FILE* result_file = fopen(copy , "w");
   if(result_file == NULL){
@@ -19,23 +17,50 @@ int by_character(char* original, char* copy){
     return -1;
   }
   
-
   fseek(original_file , 0 , SEEK_END);
   long pos = ftell(original_file);
-  int last_inline = 0;
   while(pos > 0){
     pos--;
     fseek(original_file , pos, SEEK_SET);
     int ch = fgetc(original_file);
-
-    if(ch == '\n') last_inline = 1;
-    else last_inline = 0;
-    if(last_inline == 0) fputc(ch , result_file);
+    fputc(ch , result_file);
   }
 
   fclose(original_file);
   fclose(result_file);
   printf("Task Done!\n");
+  return 0;
+}
+
+int by_chunk(char* original , char *copy){
+  int chunk_size = 1024;
+  FILE* original_file = fopen(original , "r");
+  if(original_file == NULL){
+    printf("Failed to open the file...\n");
+    return -1;
+  }
+
+  FILE* result_file = fopen(copy , "w");
+  if(result_file == NULL){
+    printf("Failed to create the file...\n");
+    return -1;
+  }
+
+  size_t bytes_read = 1;
+  char str[chunk_size];
+  char flipped_str[chunk_size];
+  while(bytes_read > 0){
+    bytes_read = fread(str , sizeof(char), chunk_size, original_file);
+    int id = 0; int backid = bytes_read - 1;
+    while(backid >= 0){
+      flipped_str[id] = str[backid];
+      id++; backid--;
+    }
+    flipped_str[id] = '\0';
+    fwrite(flipped_str , sizeof(char), bytes_read, result_file);
+  }
+  fclose(original_file);
+  fclose(result_file);
   return 0;
 }
 
@@ -53,7 +78,12 @@ int main( int argc , char* argv[] ){
   clock_gettime(CLOCK_MONOTONIC, &start);
   #endif
 
+  #ifdef USE_CHUNK
+  by_chunk(original , copy);
+  #else
   by_character(original , copy);
+  #endif
+
   #ifdef _WIN32
   printf("time in nanoseconds only aviable on linux version of the program!\n");
   #endif
