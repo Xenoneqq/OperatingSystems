@@ -1,6 +1,6 @@
 # Operating Systems
 
-C programs solving various Operating Systems-related problems, created as part of a college course covering key concepts and implementations.
+Programs written in C solving various Operating Systems-related problems, created as part of a college course covering key concepts and implementations.
 
 ## How to boot up programs
 
