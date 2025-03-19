@@ -1,10 +1,27 @@
-#define _POSIX_C_SOURCE 199309L  // Wymusza wsparcie POSIX
-#include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
+#include<stdio.h>
+#include <stdlib.h>
+#include<dirent.h>
+#include<sys/stat.h>
+#include<string.h>
 
-//compile with -lrt
-int by_character(char* original, char* copy){
+void make_path(char* out, char* path , char* file){
+  int i = 0;
+  int pathlen = strlen(path);
+  int namelen = strlen(file);
+  while(i < pathlen){
+    out[i] = path[i];
+    i++;
+  }
+  out[i] = '/'; i++;
+  int i2 = 0;
+  while(i2 < namelen){
+    out[i] = file[i2];
+    i2++; i++;
+  }
+  out[i] = '\0';
+}
+
+int file_read(char* original, char* copy){
   FILE* original_file = fopen(original , "r");
   if(original_file == NULL){
     printf("Failed to open the file...\n");
@@ -32,78 +49,54 @@ int by_character(char* original, char* copy){
   return 0;
 }
 
-int by_chunk(char* original , char *copy){
-  int chunk_size = 1024;
-  FILE* original_file = fopen(original , "r");
-  if(original_file == NULL){
-    printf("Failed to open the file...\n");
+int read_directory(char* open, char* clone){
+  DIR *dir;
+  dir = opendir(open);
+  if(dir == NULL){
+    printf("Failed to open directory...\n");
     return -1;
   }
 
-  FILE* result_file = fopen(copy , "w");
-  if(result_file == NULL){
-    printf("Failed to create the file...\n");
-    return -1;
-  }
+  #ifndef _WIN32
+  mkdir(clone, 0777 );
+  #else
+  mkdir(clone);
+  #endif
 
-  size_t bytes_read = 1;
-  char str[chunk_size];
-  char flipped_str[chunk_size];
-  while(bytes_read > 0){
-    bytes_read = fread(str , sizeof(char), chunk_size, original_file);
-    int id = 0; int backid = bytes_read - 1;
-    while(backid >= 0){
-      flipped_str[id] = str[backid];
-      id++; backid--;
+  struct dirent *entry;
+  struct stat statbuff;
+
+  while((entry = readdir(dir)) != NULL){
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+      continue;
     }
-    flipped_str[id] = '\0';
-    fwrite(flipped_str , sizeof(char), bytes_read, result_file);
+
+    if (fstatat(dirfd(dir), entry->d_name, &statbuff, 0) == 0) {
+      char* name = entry->d_name;
+      printf("%s\n",name);
+      int length = strlen(name);
+      char type[5];
+      for(int i = 0; i < 4; i++){
+        type[3-i] = name[length - i - 1];
+        type[4] = '\0';
+      }
+      if(strcmp(type , ".txt") == 0){
+        char* og_path = malloc(sizeof(char) * (strlen(open) + length + 2));
+        make_path(og_path , open , name);
+
+        char* clone_path = malloc(sizeof(char) * (strlen(clone) + length + 2));
+        make_path(clone_path , clone , name);
+        file_read(og_path , clone_path);
+        printf("%s\n" , og_path);
+      }
+    }
   }
-  fclose(original_file);
-  fclose(result_file);
+
+  closedir(dir);
   return 0;
 }
 
-int main( int argc , char* argv[] ){
-  printf("Reading file character by character.\n");
-  if(argc < 3){
-    printf("No files specified...\n");
-    return -1;
-  }
-  char* original = argv[1];
-  char* copy = argv[2];
-
-  #ifndef _WIN32
-  struct timespec start, end;
-  clock_gettime(CLOCK_MONOTONIC, &start);
-  #endif
-
-  #ifdef USE_CHUNK
-  by_chunk(original , copy);
-  #else
-  by_character(original , copy);
-  #endif
-
-  #ifdef _WIN32
-  printf("time in nanoseconds only aviable on linux version of the program!\n");
-  #endif
-
-  #ifndef _WIN32
-  clock_gettime(CLOCK_MONOTONIC, &end);
-  #endif
-
-  #ifndef _WIN32
-  long seconds = end.tv_sec - start.tv_sec;
-  long nanoseconds = end.tv_nsec - start.tv_nsec;
-  if (nanoseconds < 0) { 
-      seconds--;
-      nanoseconds += 1000000000;
-  }
-  double ms = seconds * 1000 + nanoseconds / 1000000.0;
-  double us = seconds * 1000000 + nanoseconds / 1000.0;
-  double ns = seconds * 1000000000 + nanoseconds;
-
-  printf("Czas wykonania: %.3f ms (%.0f µs, %.0f ns)\n", ms, us, ns);
-  #endif
+int main(){
+  read_directory("./art" , "./res");
   return 0;
 }
