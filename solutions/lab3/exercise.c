@@ -34,13 +34,15 @@ int file_read(char* original, char* copy){
     return -1;
   }
   
-  fseek(original_file , 0 , SEEK_END);
-  long pos = ftell(original_file);
-  while(pos > 0){
-    pos--;
-    fseek(original_file , pos, SEEK_SET);
-    int ch = fgetc(original_file);
-    fputc(ch , result_file);
+  int length, i;
+  char block[1024];
+  while(fgets(block , sizeof(block), original_file) != NULL){
+    length = strlen(block);
+    for(i = length - 1; i >= 0; i--){
+      if(block[i] == '\n') continue;
+      fputc(block[i] , result_file);
+    }
+    fputc('\n', result_file);
   }
 
   fclose(original_file);
