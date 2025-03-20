@@ -47,7 +47,6 @@ int file_read(char* original, char* copy){
 
   fclose(original_file);
   fclose(result_file);
-  printf("Task Done!\n");
   return 0;
 }
 
@@ -75,7 +74,6 @@ int read_directory(char* open, char* clone){
 
     if (fstatat(dirfd(dir), entry->d_name, &statbuff, 0) == 0) {
       char* name = entry->d_name;
-      printf("%s\n",name);
       int length = strlen(name);
       char type[5];
       for(int i = 0; i < 4; i++){
@@ -89,7 +87,6 @@ int read_directory(char* open, char* clone){
         char* clone_path = malloc(sizeof(char) * (strlen(clone) + length + 2));
         make_path(clone_path , clone , name);
         file_read(og_path , clone_path);
-        printf("%s\n" , og_path);
       }
     }
   }
@@ -100,5 +97,6 @@ int read_directory(char* open, char* clone){
 
 int main(){
   read_directory("./art" , "./res");
+  printf("Task Done!\n");
   return 0;
 }
