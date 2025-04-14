@@ -19,4 +19,10 @@ The programs use ``Make files`` to provide an easy method of testing, compiling 
 - ``make clean`` - used to remove binary files (compiled programs, result files, generated data)
 
 ### 📂 File Hierarchy
-Program directories are organized into classes, each focusing on a specific topic related to operating systems. The directories are named ``lab`` followed by a number that corresponds to the class they were created for.
+Program directories are organized into classes, each focusing on a specific topic related to operating systems. The directories are named ``lab`` followed by a number that corresponds to the class they were created for. The programs are split into two directories:
+
+#### exercises
+- contains simple programs that explain different operations that are possible in c
+
+#### solutions
+- contains soultions for each class exercise
