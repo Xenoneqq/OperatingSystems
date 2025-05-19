@@ -6,6 +6,15 @@
 *.so
 *.output
 
+# Ignore packed solutions
+*.tar.gz
+*.tar
+*.gz
+
+#ignore .vscode and .idea
+*.vscode
+*.idea
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
